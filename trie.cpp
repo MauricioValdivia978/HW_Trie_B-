@@ -1,6 +1,5 @@
 #include<unordered_map>
 #include<vector>
-using namespace std;
 
 #include <iostream>
 
@@ -9,6 +8,11 @@ using namespace std;
 struct Node{
     string value;
     Node* next[256];
+    Node() : value("") {
+        for (int i = 0; i < 256; ++i) {
+            next[i] = nullptr;
+        }
+    }
 };
 
 class Trie{
@@ -72,17 +76,35 @@ public:
         return cnt;
     }
 
+    Node* findNode(const std::string& str) const {
+        Node* current = root;
+        for (char ch : str) {
+            if (current->next[ch] == nullptr) {
+                return nullptr;  // El prefijo no está presente en el trie
+            }
+            current = current->next[ch];
+        }
+        return current;
+    }
+
+    bool startsWith(const string& prefix) const {
+        return findNode(prefix) != nullptr;
+    }
+
 };
 
 int main() {
     Trie trie;
-    trie.Insert("manzana","fruta");
-    trie.Insert("banana","fruta");
+    trie.Insert("manzana", "fruta");
+    trie.Insert("platano", "fruta");
 
-    cout<<"Buscar 'manzana': "<<trie.Search("manzana")<<endl;
-    cout<<"Buscar 'naranja': "<<trie.Search("naranja")<<endl;
+    cout << "Buscar 'platano': " << trie.Search("platano") << endl;
+    cout << "Buscar 'naranja': " << trie.Search("naranja") << endl;
 
-    cout<<"Tamaño de Trie: "<<trie.size()<<endl;
+    cout << "Empieza con 'pla': " << (trie.startsWith("pla") ? "Found" : "Not found") << std::endl;
+    cout << "Empieza con 'bat': " << (trie.startsWith("bat") ? "Found" : "Not found") << std::endl;
+
+    cout << "Tamaño de Trie: " << trie.size() << endl;
 
     return 0;
 }
